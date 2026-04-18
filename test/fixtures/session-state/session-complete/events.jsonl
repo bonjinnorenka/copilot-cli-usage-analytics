@@ -1,0 +1,2 @@
+{"type":"session.start","data":{"sessionId":"abc1234567890","startTime":"2026-04-18T10:30:00Z"}}
+{"type":"session.shutdown","data":{"modelMetrics":{"gpt-4o":{"usage":{"inputTokens":1000,"cacheReadTokens":200,"cacheWriteTokens":50,"outputTokens":300,"reasoningTokens":0},"requests":{"cost":1}}}}}

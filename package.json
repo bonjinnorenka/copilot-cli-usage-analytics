@@ -8,5 +8,8 @@
     "start": "node analyze.mjs",
     "analyze": "node analyze.mjs"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "cmd-table": "^1.5.0"
+  }
 }

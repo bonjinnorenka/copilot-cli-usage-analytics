@@ -3,6 +3,7 @@
 import { readFileSync, writeFileSync, existsSync, mkdirSync, readdirSync, statSync } from 'fs';
 import { join } from 'path';
 import { homedir } from 'os';
+import { Table } from 'cmd-table';
 
 const PRICING_URL = 'https://raw.githubusercontent.com/BerriAI/litellm/main/model_prices_and_context_window.json';
 const CACHE_DIR = join(homedir(), '.cache', 'copilot-analytics');
@@ -130,18 +131,6 @@ function displayId(id, full) {
   return full ? id : id.slice(0, 8) + '…';
 }
 
-function pad(str, len, align = 'right') {
-  const s = String(str);
-  if (s.length >= len) return s;
-  const diff = len - s.length;
-  return align === 'right' ? ' '.repeat(diff) + s : s + ' '.repeat(diff);
-}
-
-function cell(str, len, align = 'right') {
-  const s = String(str);
-  return s.length > len ? s : pad(s, len, align);
-}
-
 async function main() {
   const args = parseArgs(process.argv);
   const sessionPath = args.sessionPath || join(homedir(), '.copilot', 'session-state');
@@ -230,38 +219,39 @@ async function main() {
   const totalOutputStr = grandTotalReasoning > 0
     ? `${fmtNum(grandTotalOutput)}(${fmtNum(grandTotalReasoning)})`
     : fmtNum(grandTotalOutput);
-  rows.push({
-    id: 'TOTAL', model: '', timestamp: '', cost: String(grandTotalCost),
+
+  const table = new Table({
+    responsiveMode: 'hide',
+    headerColor: 'cyan',
+    columns: [
+      { name: 'Session ID',       key: 'id',         align: 'left',  priority: 3 },
+      { name: 'Model',            key: 'model',      align: 'left',  priority: 1 },
+      { name: 'Timestamp',        key: 'timestamp',  align: 'left',  priority: 0 },
+      { name: 'Input Token',      key: 'input',      align: 'right', priority: 2 },
+      { name: 'CacheWrite',       key: 'cacheWrite', align: 'right', priority: 4 },
+      { name: 'CacheRead',        key: 'cacheRead',  align: 'right', priority: 4 },
+      { name: 'Output Token',     key: 'output',     align: 'right', priority: 2 },
+      { name: 'Total Token',      key: 'total',      align: 'right', priority: 0 },
+      { name: 'Total Pricing',    key: 'pricing',    align: 'right', priority: 0 },
+      { name: 'Premium Requests', key: 'cost',       align: 'right', priority: 4 },
+      { name: 'Efficiency',       key: 'efficiency', align: 'right', priority: 0 },
+    ]
+  });
+
+  for (const row of rows) {
+    table.addRow(row);
+  }
+
+  table.setFooter({
+    id: 'TOTAL', cost: String(grandTotalCost),
     input: fmtNum(grandTotalInput), cacheWrite: fmtNum(grandTotalCacheWrite),
     cacheRead: fmtNum(grandTotalCacheRead), output: totalOutputStr,
-    total: fmtNum(grandTotalTokens), pricing: fmtUSD(grandTotalPricing), efficiency: totalEfficiency
+    total: fmtNum(grandTotalTokens), pricing: fmtUSD(grandTotalPricing),
+    efficiency: totalEfficiency
   });
-
-  const headers = ['Session ID', 'Model', 'Timestamp', 'Input Token', 'CacheWrite', 'CacheRead', 'OutputToken', 'Total Token', 'Total Pricing', 'Premium Requests', 'Efficiency'];
-  const keys = ['id', 'model', 'timestamp', 'input', 'cacheWrite', 'cacheRead', 'output', 'total', 'pricing', 'cost', 'efficiency'];
-  const colWidths = headers.map((h, i) => {
-    let maxLen = h.length;
-    for (const row of rows) {
-      const val = String(row[keys[i]]);
-      if (val.length > maxLen) maxLen = val.length;
-    }
-    return maxLen + 1;
-  });
-
-  const headerLine = headers.map((h, i) => i < 3 ? pad(h, colWidths[i], 'left') : pad(h, colWidths[i])).join('| ');
-  const sepLine = colWidths.map(w => '-'.repeat(w)).join('+');
-  const dataLines = rows.map(row => keys.map((k, i) => {
-    const val = String(row[k]);
-    return i < 3 ? pad(val, colWidths[i], 'left') : pad(val, colWidths[i]);
-  }).join('| '));
 
   console.log();
-  console.log(headerLine);
-  console.log(sepLine);
-  for (let i = 0; i < dataLines.length; i++) {
-    console.log(dataLines[i]);
-    if (i === rows.length - 2) console.log(sepLine);
-  }
+  console.log(table.render());
   console.log();
 
   if (skipped.length > 0) {

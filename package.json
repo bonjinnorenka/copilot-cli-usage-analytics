@@ -1,12 +1,33 @@
 {
-  "name": "copilot-cli-usage-analytics",
+  "name": "@bonjinnorenka/copilot-usage",
   "version": "1.0.0",
   "description": "Analyze GitHub Copilot CLI session usage and costs",
   "type": "module",
   "main": "analyze.mjs",
+  "publishConfig": {
+    "access": "public"
+  },
+  "bin": {
+    "copilot-usage": "analyze.mjs"
+  },
+  "files": [
+    "analyze.mjs"
+  ],
   "scripts": {
     "start": "node analyze.mjs",
     "analyze": "node analyze.mjs"
+  },
+  "keywords": [
+    "copilot",
+    "github-copilot",
+    "cli",
+    "analytics",
+    "usage",
+    "cost"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bonjinnorenka/copilot-cli-usage-analytics.git"
   },
   "license": "MIT",
   "dependencies": {

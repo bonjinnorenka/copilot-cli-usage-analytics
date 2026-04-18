@@ -1,4 +1,4 @@
-# copilot-cli-usage-analytics
+# @bonjinnorenka/copilot-usage
 
 Analyze GitHub Copilot CLI session usage and costs.
 
@@ -13,10 +13,17 @@ Analyze GitHub Copilot CLI session usage and costs.
 ## Usage
 
 ```bash
-npx copilot-cli-usage-analytics
+npx @bonjinnorenka/copilot-usage
 ```
 
-Or install and run:
+Or install globally and run:
+
+```bash
+npm install -g @bonjinnorenka/copilot-usage
+copilot-usage
+```
+
+Local development:
 
 ```bash
 npm install
@@ -46,6 +53,10 @@ npm start
 2. Parses `events.jsonl` from each session to extract `session.start` and `session.shutdown` events
 3. Computes per-model token usage and estimates cost using litellm pricing data
 4. Calculates **Efficiency** = `Total Pricing / (Cost × $0.04)` — higher means more value per premium request
+
+## Acknowledgments
+
+Inspired by [ccusage](https://github.com/ryoppippi/ccusage).
 
 ## License
 

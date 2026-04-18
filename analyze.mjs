@@ -237,8 +237,8 @@ async function main() {
     total: fmtNum(grandTotalTokens), pricing: fmtUSD(grandTotalPricing), efficiency: totalEfficiency
   });
 
-  const headers = ['Session ID', 'Model', 'Timestamp', 'Cost', 'Input Token', 'CacheWrite', 'CacheRead', 'OutputToken', 'Total Token', 'Total Pricing', 'Efficiency'];
-  const keys = ['id', 'model', 'timestamp', 'cost', 'input', 'cacheWrite', 'cacheRead', 'output', 'total', 'pricing', 'efficiency'];
+  const headers = ['Session ID', 'Model', 'Timestamp', 'Input Token', 'CacheWrite', 'CacheRead', 'OutputToken', 'Total Token', 'Total Pricing', 'Premium Requests', 'Efficiency'];
+  const keys = ['id', 'model', 'timestamp', 'input', 'cacheWrite', 'cacheRead', 'output', 'total', 'pricing', 'cost', 'efficiency'];
   const colWidths = headers.map((h, i) => {
     let maxLen = h.length;
     for (const row of rows) {

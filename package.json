@@ -15,7 +15,8 @@
   ],
   "scripts": {
     "start": "node analyze.mjs",
-    "analyze": "node analyze.mjs"
+    "analyze": "node analyze.mjs",
+    "test": "node --test"
   },
   "keywords": [
     "copilot",

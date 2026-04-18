@@ -1,6 +1,6 @@
 {
   "name": "@bonjinnorenka/copilot-usage",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Analyze GitHub Copilot CLI session usage and costs",
   "type": "module",
   "main": "analyze.mjs",

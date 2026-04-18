@@ -1,0 +1,12 @@
+{
+  "name": "copilot-cli-usage-analytics",
+  "version": "1.0.0",
+  "description": "Analyze GitHub Copilot CLI session usage and costs",
+  "type": "module",
+  "main": "analyze.mjs",
+  "scripts": {
+    "start": "node analyze.mjs",
+    "analyze": "node analyze.mjs"
+  },
+  "license": "MIT"
+}

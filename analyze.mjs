@@ -184,11 +184,20 @@ async function main() {
   let grandTotalPricing = 0;
   let grandTotalCost = 0;
   let grandTotalTokens = 0;
+  let grandTotalInput = 0;
+  let grandTotalCacheWrite = 0;
+  let grandTotalCacheRead = 0;
+  let grandTotalOutput = 0;
+  let grandTotalReasoning = 0;
 
   for (const session of sessions) {
     const costs = computeCosts(session.shutdownData.modelMetrics, pricing);
     for (const c of costs) {
       const id = displayId(session.sessionId, args.fullId);
+      const ts = new Date(session.startTime);
+      const timestamp = session.startTime
+        ? `${String(ts.getMonth() + 1).padStart(2, '0')}/${String(ts.getDate()).padStart(2, '0')} ${String(ts.getHours()).padStart(2, '0')}:${String(ts.getMinutes()).padStart(2, '0')}`
+        : '-';
       const totalTokens = c.inputTokens + c.cacheReadTokens + c.cacheWriteTokens + c.outputTokens;
       const outputStr = c.reasoningTokens > 0
         ? `${fmtNum(c.outputTokens)}(${fmtNum(c.reasoningTokens)})`
@@ -198,7 +207,7 @@ async function main() {
         ? (c.totalPricing / (c.cost * PREMIUM_REQUEST_DOLLAR)).toFixed(1)
         : '-';
       rows.push({
-        id, model: c.model, cost: String(c.cost),
+        id, model: c.model, timestamp, cost: String(c.cost),
         input: fmtNum(c.inputTokens), cacheWrite: fmtNum(c.cacheWriteTokens),
         cacheRead: fmtNum(c.cacheReadTokens), output: outputStr,
         total: fmtNum(totalTokens), pricing: pricingStr, efficiency
@@ -207,20 +216,29 @@ async function main() {
       if (c.totalPricing !== null) grandTotalPricing += c.totalPricing;
       grandTotalCost += c.cost;
       grandTotalTokens += totalTokens;
+      grandTotalInput += c.inputTokens;
+      grandTotalCacheWrite += c.cacheWriteTokens;
+      grandTotalCacheRead += c.cacheReadTokens;
+      grandTotalOutput += c.outputTokens;
+      grandTotalReasoning += c.reasoningTokens;
     }
   }
 
   const totalEfficiency = grandTotalCost > 0
     ? (grandTotalPricing / (grandTotalCost * PREMIUM_REQUEST_DOLLAR)).toFixed(1)
     : '-';
+  const totalOutputStr = grandTotalReasoning > 0
+    ? `${fmtNum(grandTotalOutput)}(${fmtNum(grandTotalReasoning)})`
+    : fmtNum(grandTotalOutput);
   rows.push({
-    id: 'TOTAL', model: '', cost: String(grandTotalCost),
-    input: '', cacheWrite: '', cacheRead: '', output: '',
+    id: 'TOTAL', model: '', timestamp: '', cost: String(grandTotalCost),
+    input: fmtNum(grandTotalInput), cacheWrite: fmtNum(grandTotalCacheWrite),
+    cacheRead: fmtNum(grandTotalCacheRead), output: totalOutputStr,
     total: fmtNum(grandTotalTokens), pricing: fmtUSD(grandTotalPricing), efficiency: totalEfficiency
   });
 
-  const headers = ['Session ID', 'Model', 'Cost', 'Input Token', 'CacheWrite', 'CacheRead', 'OutputToken', 'Total Token', 'Total Pricing', 'Efficiency'];
-  const keys = ['id', 'model', 'cost', 'input', 'cacheWrite', 'cacheRead', 'output', 'total', 'pricing', 'efficiency'];
+  const headers = ['Session ID', 'Model', 'Timestamp', 'Cost', 'Input Token', 'CacheWrite', 'CacheRead', 'OutputToken', 'Total Token', 'Total Pricing', 'Efficiency'];
+  const keys = ['id', 'model', 'timestamp', 'cost', 'input', 'cacheWrite', 'cacheRead', 'output', 'total', 'pricing', 'efficiency'];
   const colWidths = headers.map((h, i) => {
     let maxLen = h.length;
     for (const row of rows) {
@@ -230,11 +248,11 @@ async function main() {
     return maxLen + 1;
   });
 
-  const headerLine = headers.map((h, i) => i < 2 ? pad(h, colWidths[i], 'left') : pad(h, colWidths[i])).join('| ');
+  const headerLine = headers.map((h, i) => i < 3 ? pad(h, colWidths[i], 'left') : pad(h, colWidths[i])).join('| ');
   const sepLine = colWidths.map(w => '-'.repeat(w)).join('+');
   const dataLines = rows.map(row => keys.map((k, i) => {
     const val = String(row[k]);
-    return i < 2 ? pad(val, colWidths[i], 'left') : pad(val, colWidths[i]);
+    return i < 3 ? pad(val, colWidths[i], 'left') : pad(val, colWidths[i]);
   }).join('| '));
 
   console.log();

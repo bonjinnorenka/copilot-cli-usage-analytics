@@ -131,6 +131,18 @@ function displayId(id, full) {
   return full ? id : id.slice(0, 8) + '…';
 }
 
+function displayWidth(value) {
+  return Array.from(String(value ?? '')).length;
+}
+
+function getColumnWidth(name, key, rows, footer) {
+  return Math.max(
+    displayWidth(name),
+    ...rows.map(row => displayWidth(row[key])),
+    displayWidth(footer[key])
+  );
+}
+
 async function main() {
   const args = parseArgs(process.argv);
   const sessionPath = args.sessionPath || join(homedir(), '.copilot', 'session-state');
@@ -220,21 +232,33 @@ async function main() {
     ? `${fmtNum(grandTotalOutput)}(${fmtNum(grandTotalReasoning)})`
     : fmtNum(grandTotalOutput);
 
+  const footer = {
+    id: 'TOTAL',
+    cost: String(grandTotalCost),
+    input: fmtNum(grandTotalInput),
+    cacheWrite: fmtNum(grandTotalCacheWrite),
+    cacheRead: fmtNum(grandTotalCacheRead),
+    output: totalOutputStr,
+    total: fmtNum(grandTotalTokens),
+    pricing: fmtUSD(grandTotalPricing),
+    efficiency: totalEfficiency
+  };
+
   const table = new Table({
     responsiveMode: 'hide',
     headerColor: 'cyan',
     columns: [
-      { name: 'Session ID',       key: 'id',         align: 'left',  priority: 3 },
-      { name: 'Model',            key: 'model',      align: 'left',  priority: 1 },
-      { name: 'Timestamp',        key: 'timestamp',  align: 'left',  priority: 0 },
-      { name: 'Input Token',      key: 'input',      align: 'right', priority: 2 },
-      { name: 'CacheWrite',       key: 'cacheWrite', align: 'right', priority: 4 },
-      { name: 'CacheRead',        key: 'cacheRead',  align: 'right', priority: 4 },
-      { name: 'Output Token',     key: 'output',     align: 'right', priority: 2 },
-      { name: 'Total Token',      key: 'total',      align: 'right', priority: 0 },
-      { name: 'Total Pricing',    key: 'pricing',    align: 'right', priority: 0 },
-      { name: 'Premium Requests', key: 'cost',       align: 'right', priority: 4 },
-      { name: 'Efficiency',       key: 'efficiency', align: 'right', priority: 0 },
+      { name: 'Session ID',       key: 'id',         align: 'left',  priority: 3, width: getColumnWidth('Session ID', 'id', rows, footer) },
+      { name: 'Model',            key: 'model',      align: 'left',  priority: 1, width: getColumnWidth('Model', 'model', rows, footer) },
+      { name: 'Timestamp',        key: 'timestamp',  align: 'left',  priority: 0, width: getColumnWidth('Timestamp', 'timestamp', rows, footer) },
+      { name: 'Input Token',      key: 'input',      align: 'right', priority: 2, width: getColumnWidth('Input Token', 'input', rows, footer) },
+      { name: 'CacheWrite',       key: 'cacheWrite', align: 'right', priority: 4, width: getColumnWidth('CacheWrite', 'cacheWrite', rows, footer) },
+      { name: 'CacheRead',        key: 'cacheRead',  align: 'right', priority: 4, width: getColumnWidth('CacheRead', 'cacheRead', rows, footer) },
+      { name: 'Output Token',     key: 'output',     align: 'right', priority: 2, width: getColumnWidth('Output Token', 'output', rows, footer) },
+      { name: 'Total Token',      key: 'total',      align: 'right', priority: 0, width: getColumnWidth('Total Token', 'total', rows, footer) },
+      { name: 'Total Pricing',    key: 'pricing',    align: 'right', priority: 0, width: getColumnWidth('Total Pricing', 'pricing', rows, footer) },
+      { name: 'Premium Requests', key: 'cost',       align: 'right', priority: 4, width: getColumnWidth('Premium Requests', 'cost', rows, footer) },
+      { name: 'Efficiency',       key: 'efficiency', align: 'right', priority: 0, width: getColumnWidth('Efficiency', 'efficiency', rows, footer) },
     ]
   });
 
@@ -242,13 +266,7 @@ async function main() {
     table.addRow(row);
   }
 
-  table.setFooter({
-    id: 'TOTAL', cost: String(grandTotalCost),
-    input: fmtNum(grandTotalInput), cacheWrite: fmtNum(grandTotalCacheWrite),
-    cacheRead: fmtNum(grandTotalCacheRead), output: totalOutputStr,
-    total: fmtNum(grandTotalTokens), pricing: fmtUSD(grandTotalPricing),
-    efficiency: totalEfficiency
-  });
+  table.setFooter(footer);
 
   console.log();
   console.log(table.render());

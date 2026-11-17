@@ -1,27 +1,15 @@
 # Security Policy
 
-## Supported Versions
+## End of Security Support
 
-This project currently supports security fixes on the default branch only.
+**This project has been unmaintained since November 17, 2026.**
 
-| Version | Supported |
-| ------- | --------- |
-| `main`  | Yes       |
-| < `main` | No       |
+All versions, including the `main` branch and published npm releases, are **unsupported**. No further security patches, vulnerability triage, compatibility fixes, or response-time commitments are provided.
 
-## Reporting a Vulnerability
+This repository is retained for historical reference under the MIT license. The [README](README.md) explains the end of maintenance and recommends [ccusage](https://github.com/ccusage/ccusage) for GitHub Copilot CLI usage analysis.
 
-Please do not open public issues for suspected vulnerabilities.
+## Vulnerability Reports
 
-Use GitHub Private Vulnerability Reporting for this repository:
+There is **no actively monitored security support channel** for this project, and reports or remediation requests may not receive a response. The previous seven-day acknowledgment target and security-fix commitments no longer apply.
 
-- https://github.com/bonjinnorenka/copilot-cli-usage-analytics/security/advisories/new
-
-If that flow is unavailable, contact `@bonjinnorenka` through GitHub and wait
-for a private channel before sharing details.
-
-## Response Expectations
-
-- Initial acknowledgment target: within 7 days
-- Status updates: when triage or remediation materially changes
-- Fix availability: best effort, depending on severity and maintainer capacity
+If you discover a vulnerability, avoid relying on this unmaintained package in security-sensitive environments. Consider migrating to a maintained alternative or maintaining a patched fork. Report vulnerabilities in external dependencies to their respective maintainers.

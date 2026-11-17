@@ -2,6 +2,27 @@
 
 Analyze GitHub Copilot CLI session usage and costs.
 
+## Maintenance Status
+
+> [!IMPORTANT]
+> **This project is no longer maintained as of November 17, 2026.**
+> No further feature updates, bug fixes, compatibility fixes, or security patches are planned.
+
+GitHub replaced premium request-based billing with token-based usage billing on June 1, 2026. Some existing annual Copilot Pro / Pro+ subscriptions remained on the legacy premium request model, but the premium request efficiency metric calculated by this tool does **not** represent costs under the current usage-based billing model. See [GitHub's billing documentation](https://docs.github.com/en/copilot/reference/copilot-billing/request-based-billing-legacy/what-changed-with-billing) for details.
+
+For GitHub Copilot CLI token usage and estimated cost analysis, use [ccusage](https://github.com/ccusage/ccusage), which now supports Copilot CLI:
+
+```bash
+npx ccusage@latest copilot daily
+npx ccusage@latest copilot session
+```
+
+This repository remains publicly available under the MIT license for historical reference and forking. The documentation below describes the original functionality and is not current billing guidance.
+
+---
+
+## Historical Documentation
+
 ## Features
 
 - Parses `~/.copilot/session-state` to extract per-session model metrics
